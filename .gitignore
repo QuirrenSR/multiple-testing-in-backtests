@@ -1,0 +1,22 @@
+# environment
+.venv/
+venv/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# notebooks
+.ipynb_checkpoints/
+
+# editor / OS
+.vscode/
+.idea/
+Thumbs.db
+
+# data — regenerable, never commit
+data/
+*.npz
+*.npy

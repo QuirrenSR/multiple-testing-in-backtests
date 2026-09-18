@@ -8,7 +8,7 @@ def bonferroni(p_values, alpha = 0.05) -> np.ndarray:
     p_values : array_like
         P values of individual tests.
     alpha : float, optional
-        Standard significance level for tests. 
+        Standard significance level for tests, be default 0.05
 
     Returns
     -------
@@ -20,6 +20,22 @@ def bonferroni(p_values, alpha = 0.05) -> np.ndarray:
     return p_arr <= alpha/m
 
 def benjamini_hochberg(p_values, alpha = 0.05) -> np.ndarray:
+    """Checks the p_values of a given outcome and using the Benjamini Hochberg criterion returns a boolean array.
+    
+    The cutoff rejects every hypothesis at or below the largest passing rank, including p-values that exceed their own (i/m)·α threshold
+
+    Parameters
+    ----------
+    p_values : array_like
+        P values of individual tests.
+    alpha : float, optional
+        Standard significance level for tests, by default 0.05
+
+    Returns
+    -------
+    np.ndarray
+        Boolean array. True values reject the null hypothesis.
+    """
     #Initialize needed variables
     p_arr = np.asarray(p_values)
     m = len(p_arr)

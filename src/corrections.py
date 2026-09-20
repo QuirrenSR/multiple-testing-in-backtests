@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 
 def bonferroni(p_values, alpha = 0.05) -> np.ndarray:
     """Checks the p_values of a given outcome and using the Bonferroni criterion returns a boolean array.
@@ -53,3 +54,34 @@ def benjamini_hochberg(p_values, alpha = 0.05) -> np.ndarray:
     mask[order[:largest + 1]] = True
     
     return mask
+
+def sharpe_to_pvalue(sharpe, years) -> np.ndarray:
+    """Calculates the p values from Sharpe ratios and number of years.
+
+    Parameters
+    ----------
+    sharpe : array_like
+        Sharpe ratios.
+        
+    years : float
+        Number of years the sharpe ratios were observed for
+
+    Returns
+    -------
+    np.ndarray
+        P values. It has the same shape as Sharpe.
+
+    Raises
+    ------
+    ValueError
+        Invalid years value. The program expects years to be greater than 0.
+    """
+    if years <= 0:
+        raise ValueError("Invalid years value.")
+        
+    sharpe_arr = np.asarray(sharpe)
+    
+    p_values = norm.sf(sharpe_arr, scale =  (1/np.sqrt(years)))
+    
+    
+    return p_values

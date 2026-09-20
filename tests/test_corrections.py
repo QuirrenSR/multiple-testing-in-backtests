@@ -1,6 +1,7 @@
 import pytest
 import numpy as np 
-from src.corrections import bonferroni,benjamini_hochberg
+from src.corrections import bonferroni,benjamini_hochberg, sharpe_to_pvalue
+from src.sharpe import sharpe_ratio, simulate_noise
 
 @pytest.mark.parametrize("correction", [bonferroni, benjamini_hochberg])
 def test_correction_returns_mask_of_input_length(correction):
@@ -14,10 +15,10 @@ def test_correction_returns_boolean_array(correction):
 
 @pytest.mark.parametrize("correction", [bonferroni, benjamini_hochberg])
 def test_correction_accepts_lists_and_arrays(correction):
-      p_values = [0.01,0.02,0.03,0.04,0.05,0.06,0.7]
-      p_arr = np.asarray(p_values)
+    p_values = [0.01,0.02,0.03,0.04,0.05,0.06,0.7]
+    p_arr = np.asarray(p_values)
       
-      assert np.array_equal(correction(p_arr), correction(p_values))
+    assert np.array_equal(correction(p_arr), correction(p_values))
        
 @pytest.mark.parametrize("correction", [bonferroni, benjamini_hochberg])
 def test_correction_rejects_nothing_when_all_p_values_are_large(correction):
@@ -50,3 +51,30 @@ def test_bh_rejections_contain_bonferroni_rejections():
         
         assert ben_mask[bon_mask].all()
         
+        
+def test_zero_sharpe_gives_half():
+    assert sharpe_to_pvalue(0, 0.5) == pytest.approx(0.5)
+    
+def test_larger_sharpe_gives_smaller_pvalue():
+    assert sharpe_to_pvalue(0.5, 1) > sharpe_to_pvalue(1.5, 1)
+    
+def test_rejects_non_positive_years():
+    with pytest.raises(ValueError):
+        sharpe_to_pvalue(2, -1)
+    
+def test_null_sharpes_are_uniform():
+    rng = np.random.default_rng(5)
+    sim = simulate_noise(4 * 252, 5000, rng)
+    sharpes = []
+    
+    for i in range(sim.shape[1]):
+        sharpes.append(sharpe_ratio(sim[:,i]))
+    
+    p_vals = sharpe_to_pvalue(sharpes, 4)
+    mask = p_vals <= 0.05   
+    val = mask.mean()
+    
+    assert (val <= 0.06 and val >= 0.04)
+            
+    
+    

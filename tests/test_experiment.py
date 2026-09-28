@@ -57,7 +57,7 @@ def test_mean_max_matches_order_statistic_theory():
 def test_ordering_theorem():
     alpha = (0.05, 0.2, 0.5)
     for i in range(12):
-        rng = np.random.default_rng(1)
+        rng = np.random.default_rng(i)
         counts = null_survival_counts(200,252,rng,alpha[i%3])
         assert (counts["bonferroni"] <= counts["benjamini_hochberg"] and counts["benjamini_hochberg"] <= counts["uncorrected"])
     
@@ -73,7 +73,18 @@ def test_uncorrected_count_binomial_band():
     rng = np.random.default_rng(0)
     n_strategies = 1000
     alpha = 0.05
-    counts = null_survival_counts(n_strategies,252*4,rng,alpha= alpha)
+    counts = null_survival_counts(n_strategies, 252*4, rng, alpha = alpha)
     
     
     assert counts["uncorrected"] == pytest.approx(n_strategies * alpha, abs= 4* np.sqrt(n_strategies*alpha*(1- alpha)))
+    
+
+def test_null_counts_are_reproducable():
+    rng1 = np.random.default_rng(0)
+    rng2 = np.random.default_rng(0)
+    
+    counts1 = null_survival_counts(100,252,rng1)
+    
+    counts2 = null_survival_counts(100,252,rng2)
+    
+    assert counts1==counts2

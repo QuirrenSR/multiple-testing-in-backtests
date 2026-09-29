@@ -79,7 +79,7 @@ def test_uncorrected_count_binomial_band():
     assert counts["uncorrected"] == pytest.approx(n_strategies * alpha, abs= 4* np.sqrt(n_strategies*alpha*(1- alpha)))
     
 
-def test_null_counts_are_reproducable():
+def test_null_counts_are_reproducible():
     rng1 = np.random.default_rng(0)
     rng2 = np.random.default_rng(0)
     

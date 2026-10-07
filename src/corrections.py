@@ -61,7 +61,7 @@ def sharpe_to_pvalue(sharpe, years) -> np.ndarray:
     Parameters
     ----------
     sharpe : array_like
-        Sharpe ratios.
+        Annualised Sharpe ratios.
         
     years : float
         Number of years the sharpe ratios were observed for
